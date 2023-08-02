@@ -34,7 +34,6 @@ class ROS2Camera(Graph):
         """
 
         # Initialize the Super class "object" attribute
-        # update_rate not necessary
         super().__init__(graph_type="ROS2Camera")
 
         # Save the id of the sensor
@@ -51,7 +50,7 @@ class ROS2Camera(Graph):
         """Method that initializes the graph of the camera.
 
         Args:
-            vehicle (Vehicle): The vehicle that this sensor is attached to.
+            vehicle (Vehicle): The vehicle that this graph is attached to.
         """
 
         self._namespace = f"/{vehicle.vehicle_name}"
@@ -64,9 +63,9 @@ class ROS2Camera(Graph):
             self._camera_xform_path = f"{vehicle.prim_path}/{self._camera_xform_path}"
         self._camera_prim_path = f"{self._camera_xform_path}/{self._frame_id}"
 
-        # Create camera prism
-        if not is_prim_path_valid(self._camera_xform_path):
-            carb.log_error(f"Cannot create ROS2 Camera graph, the prim path \"{self._camera_xform_path}\" is not valid")
+        # Check if the camera paths are valid
+        if not is_prim_path_valid(self._camera_xform_path) or not is_prim_path_valid(self._camera_prim_path):
+            carb.log_error(f"Cannot create ROS2 Camera graph, the prim path \"{self._camera_prim_path}\" is not valid")
             return
 
         # Set the prim paths for camera and tf graphs
