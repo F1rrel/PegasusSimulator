@@ -566,6 +566,7 @@
         "${workspaceFolder}/app/kit/exts/omni.kit.primitive.mesh",
         "${workspaceFolder}/app/kit/exts/omni.kit.usda_edit",
         "${workspaceFolder}/app/kit/exts/omni.kit.viewport.bundle",
+        "./app/exts/omni.isaac.ros2_bridge/omni/isaac/rclpy",
     ],
 
     // Python & Pylance Setup
