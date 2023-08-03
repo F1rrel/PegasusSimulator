@@ -109,7 +109,7 @@ class Camera(Sensor):
         self.camera.set_vertical_aperture(self._vertical_aperture)
 
         # Set the sensor's frame path
-        self.frame_path = camera_xform_path
+        self.frame_path = self._camera_prim_path
 
     @property
     def state(self):
