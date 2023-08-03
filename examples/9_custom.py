@@ -13,7 +13,7 @@ from omni.isaac.kit import SimulationApp
 # Start Isaac Sim's simulation environment
 # Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
 # as this is the object that will load all the extensions and load the actual simulator.
-simulation_app = SimulationApp({"headless": False})
+simulation_app = SimulationApp({"headless": False, "width": 640, "height": 480})
 
 # -----------------------------------
 # The actual script should start here
@@ -83,7 +83,7 @@ class PegasusApp:
         })
         config_multirotor.backends = [MavlinkBackend(mavlink_config)]
         config_multirotor.sensors = [Magnetometer(), IMU(), Barometer(), Vision(), Camera(camera_frame_path, camera_config)]
-        config_multirotor.graphs = [ROS2Camera(camera_frame_path, config={"types": ['rgb', 'camera_info']}), ROS2Tf(), ROS2Odometry()]
+        config_multirotor.graphs = [ROS2Camera(camera_frame_path, config={"types": ['rgb', 'camera_info', 'depth']}), ROS2Tf(), ROS2Odometry()]
 
         Multirotor(
             "/World/quadrotor",
