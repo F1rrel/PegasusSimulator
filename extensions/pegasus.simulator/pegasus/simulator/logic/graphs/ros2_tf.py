@@ -25,7 +25,7 @@ class ROS2Tf(Graph):
         super().__init__(graph_type="ROS2Tf")
 
     def initialize(self, vehicle: Vehicle):
-        """Method that initializes the graph of the camera.
+        """Method that initializes the graph.
 
         Args:
             vehicle (Vehicle): The vehicle that this graph is attached to.
