@@ -29,6 +29,7 @@ class ROS2Camera(Graph):
             The dictionary default parameters are
 
             >>> {"graph_evaluator": "execution",            # type of the omnigraph to create (execution, push)
+            >>>  "resolution": [640, 480],                  # output video stream resolution in pixels [width, height]
             >>>  "types": ['rgb', 'camera_info'],           # rgb, depth, depth_pcl, instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose, bbox_3d, camera_info
             >>>  "publish_labels": True}                    # publish labels for instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose and bbox_3d camera types
         """
@@ -43,6 +44,7 @@ class ROS2Camera(Graph):
 
         # Process the config dictionary
         self._graph_evaluator = config.get("graph_evaluator", "execution")
+        self._resolution = config.get("resolution", [640, 480])
         self._types = np.array(config.get("types", ['rgb', 'camera_info']))
         self._publish_labels = config.get("publish_labels", True)
 
@@ -94,18 +96,23 @@ class ROS2Camera(Graph):
                 ("on_tick", "omni.graph.action.OnTick"),
                 ("create_viewport", "omni.isaac.core_nodes.IsaacCreateViewport"),
                 ("get_render_product", "omni.isaac.core_nodes.IsaacGetViewportRenderProduct"),
+                ("set_viewport_resolution", "omni.isaac.core_nodes.IsaacSetViewportResolution"),
                 ("set_camera", "omni.isaac.core_nodes.IsaacSetCameraOnRenderProduct"),
             ],
             keys.CONNECT: [
                 ("on_tick.outputs:tick", "create_viewport.inputs:execIn"),
                 ("create_viewport.outputs:execOut", "get_render_product.inputs:execIn"),
                 ("create_viewport.outputs:viewport", "get_render_product.inputs:viewport"),
-                ("get_render_product.outputs:execOut", "set_camera.inputs:execIn"),
+                ("create_viewport.outputs:execOut", "set_viewport_resolution.inputs:execIn"),
+                ("create_viewport.outputs:viewport", "set_viewport_resolution.inputs:viewport"),
+                ("set_viewport_resolution.outputs:execOut", "set_camera.inputs:execIn"),
                 ("get_render_product.outputs:renderProductPath", "set_camera.inputs:renderProductPath"),
             ],
             keys.SET_VALUES: [
                 ("create_viewport.inputs:viewportId", 0),
-                ("create_viewport.inputs:name", f"{self._namespace}/{self._frame_id}"),
+                ("create_viewport.inputs:name", f"{self._namespace}/{self._base_name}"),
+                ("set_viewport_resolution.inputs:width", self._resolution[0]),
+                ("set_viewport_resolution.inputs:height", self._resolution[1]),
             ],
         }
 
