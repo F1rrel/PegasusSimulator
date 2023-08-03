@@ -33,7 +33,7 @@ from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-from pegasus.simulator.logic.graphs import ROS2Camera
+from pegasus.simulator.logic.graphs import ROS2Camera, ROS2Tf, ROS2Odometry
 from pegasus.simulator.logic.sensors import Magnetometer, IMU, Barometer, Vision, Camera
 
 # Auxiliary scipy and numpy modules
@@ -83,7 +83,7 @@ class PegasusApp:
         })
         config_multirotor.backends = [MavlinkBackend(mavlink_config)]
         config_multirotor.sensors = [Magnetometer(), IMU(), Barometer(), Vision(), Camera(camera_frame_path, camera_config)]
-        config_multirotor.graphs = [ROS2Camera(camera_frame_path, config={"types": ['rgb', 'camera_info']})]
+        config_multirotor.graphs = [ROS2Camera(camera_frame_path, config={"types": ['rgb', 'camera_info']}), ROS2Tf(), ROS2Odometry()]
 
         Multirotor(
             "/World/quadrotor",
