@@ -110,7 +110,7 @@ class ROS2Camera(Graph):
             ],
             keys.SET_VALUES: [
                 ("create_viewport.inputs:viewportId", 0),
-                ("create_viewport.inputs:name", f"{self._namespace}/{self._base_name}"),
+                ("create_viewport.inputs:name", f"{self._namespace}/{self._frame_id}"),
                 ("set_viewport_resolution.inputs:width", self._resolution[0]),
                 ("set_viewport_resolution.inputs:height", self._resolution[1]),
             ],
