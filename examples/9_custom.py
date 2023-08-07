@@ -63,17 +63,10 @@ class PegasusApp:
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
-        # Camera config
-        camera_frame_path = "body/camera"
-        camera_config = {
-            "position": [0.1, 0.0, 0.0],
-            "orientation": Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-            "focal_length": 16.0
-        }
-
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
+
         # Create the multirotor configuration
         mavlink_config = MavlinkBackendConfig({
             "vehicle_id": 0,
@@ -82,8 +75,19 @@ class PegasusApp:
             "px4_vehicle_model": 'iris_vision'
         })
         config_multirotor.backends = [MavlinkBackend(mavlink_config)]
-        config_multirotor.sensors = [Magnetometer(), IMU(), Barometer(), Vision(), Camera(camera_frame_path, camera_config)]
-        config_multirotor.graphs = [ROS2Camera(camera_frame_path, config={"types": ['rgb', 'camera_info', 'depth']}), ROS2Tf(), ROS2Odometry()]
+
+        # Sensors
+        camera_prim_path = "body/camera"
+        camera_config = {
+            "position": [0.1, 0.0, 0.0],
+            "orientation": Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
+            "focal_length": 16.0,
+            "overwrite_params": True
+        }
+        config_multirotor.sensors = [Magnetometer(), IMU(), Barometer(), Vision(), Camera(camera_prim_path, camera_config)]
+
+        # Graphs
+        config_multirotor.graphs = [ROS2Camera(camera_prim_path, config={"types": ['rgb', 'camera_info', 'depth']}), ROS2Tf(), ROS2Odometry()]
 
         Multirotor(
             "/World/quadrotor",

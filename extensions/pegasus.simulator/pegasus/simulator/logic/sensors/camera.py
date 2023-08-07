@@ -9,7 +9,6 @@ __all__ = ["Camera"]
 import carb
 
 from omni.isaac.core.utils.prims import is_prim_path_valid
-from omni.isaac.core.prims import XFormPrim
 from omni.isaac.sensor import Camera as CameraPrim
 
 from pegasus.simulator.logic.state import State
@@ -20,7 +19,7 @@ import numpy as np
 class Camera(Sensor):
     """The class that implements the Camera sensor. This class inherits the base class Sensor.
     """
-    def __init__(self, camera_prim_path: str, config={}):
+    def __init__(self, camera_prim_path: str, config: dict = {}):
         """Initialize the Camera class
         Args:
             camera_prim_path (str): Path to the camera prim. Global path when it starts with `/`, else local to vehicle prim path
@@ -33,12 +32,13 @@ class Camera(Sensor):
             >>>  "focus_distance", 400.0,             # Stage units
             >>>  "resolution": [640, 480],            # Pixels
             >>>  "set_projection_type": "pinhole",    # pinhole, fisheyeOrthographic, fisheyeEquidistant, fisheyeEquisolid, fisheyePolynomial, fisheyeSpherical
-            >>>  "update_rate": 30.0}                 # Hz
+            >>>  "update_rate": 30.0,                 # Hz
+            >>>  "overwrite_params": False}           # Overwrite params if the camera prim already exists
         """
 
         # Initialize the Super class "object" attribute
         # update_rate not necessary
-        super().__init__(sensor_type="Camera", update_rate=config.get("update_rate", 30))
+        super().__init__(sensor_type="Camera", update_rate=config.get("update_rate", 30.0))
 
         # Save the id of the sensor
         self._camera_prim_path = camera_prim_path
@@ -59,6 +59,7 @@ class Camera(Sensor):
         self._set_projection_type = config.get("set_projection_type", "pinhole")
         self._horizonal_aperture = config.get("horizontal_aperture", 20.9550)
         self._vertical_aperture = config.get("vertical_aperture", 15.2908)
+        self._overwrite = config.get("overwrite_params", False)
 
         # Save the current state of the camera sensor
         self._state = {
@@ -73,40 +74,35 @@ class Camera(Sensor):
             vehicle (Vehicle): The vehicle that this sensor is attached to.
         """
 
-        # Set the prim paths for the camera
-        # - camera (XForm) - ENU-FLU representation
-        #   - camera (Camera)
+        # Set the prim path for the camera
         if self._camera_prim_path[0] != '/':
-            camera_xform_path = f"{vehicle.prim_path}/{self._camera_prim_path}"
+            self._camera_prim_path = f"{vehicle.prim_path}/{self._camera_prim_path}"
         else:
-            camera_xform_path = self._camera_prim_path
-        self._camera_prim_path = f"{camera_xform_path}/{self._frame_id}"
+            self._camera_prim_path = self._camera_prim_path
 
-        # Create camera xform prim in ENU frame
-        if not is_prim_path_valid(camera_xform_path):
-            XFormPrim(
-                prim_path=camera_xform_path,
+        # Create camera prim
+        if not is_prim_path_valid(self._camera_prim_path) or self._overwrite:
+            self.camera = CameraPrim(
+                prim_path=self._camera_prim_path,
+                frequency=self._update_rate,
+                resolution=self._resolution,
                 translation=np.array(self._position),
                 orientation=[self._orientation[3], self._orientation[0], self._orientation[1], self._orientation[2]]
             )
+
+            # Set camera parameters
+            self.camera.set_focal_length(self._focal_length)
+            self.camera.set_focus_distance(self._focus_distance)
+            self.camera.set_clipping_range(self._clipping_range[0], self._clipping_range[1])
+            self.camera.set_projection_type(self._set_projection_type)
+            self.camera.set_horizontal_aperture(self._horizonal_aperture)
+            self.camera.set_vertical_aperture(self._vertical_aperture)
         else:
-            carb.log_error(f"Cannot create Camera prim, the prim path \"{camera_xform_path}\" already exists")
-            return
-
-        # Create the camera prim
-        self.camera = CameraPrim(
-            prim_path=self._camera_prim_path,
-            frequency=self._update_rate,
-            resolution=self._resolution,
-        )
-
-        # Set camera parameters
-        self.camera.set_focal_length(self._focal_length)
-        self.camera.set_focus_distance(self._focus_distance)
-        self.camera.set_clipping_range(self._clipping_range[0], self._clipping_range[1])
-        self.camera.set_projection_type(self._set_projection_type)
-        self.camera.set_horizontal_aperture(self._horizonal_aperture)
-        self.camera.set_vertical_aperture(self._vertical_aperture)
+            self.camera = CameraPrim(
+                prim_path=self._camera_prim_path,
+                frequency=self._update_rate,
+                resolution=self._resolution
+            )
 
         # Set the sensor's frame path
         self.frame_path = self._camera_prim_path

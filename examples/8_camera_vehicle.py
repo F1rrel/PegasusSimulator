@@ -33,7 +33,8 @@ from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-from pegasus.simulator.logic.graphs import ROS2Camera
+from pegasus.simulator.logic.graphs import ROS2Camera, ROS2Tf
+from pegasus.simulator.logic.sensors import Camera
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
@@ -74,11 +75,21 @@ class PegasusApp:
         })
         config_multirotor.backends = [MavlinkBackend(mavlink_config)]
 
+        # Create Camera sensor on top of the existing camera prim and change its parameters
+        camera_prim_path = "body/Camera"
+        camera_config = {
+            "position": [0.1, 0.0, 0.0],
+            "orientation": Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
+            "focal_length": 16.0,
+            "overwrite_params": True
+        }
+        config_multirotor.sensors += [Camera(camera_prim_path, config=camera_config)]
+
         # Create camera graph for the existing Camera prim on the Iris model, which can be found 
         # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
         # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
         # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
+        config_multirotor.graphs = [ROS2Camera(camera_prim_path, config={"types": ['rgb', 'camera_info']}), ROS2Tf()]
 
         Multirotor(
             "/World/quadrotor",

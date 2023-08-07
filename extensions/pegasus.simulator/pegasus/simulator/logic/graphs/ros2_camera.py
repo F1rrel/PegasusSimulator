@@ -18,11 +18,11 @@ import numpy as np
 class ROS2Camera(Graph):
     """The class that implements the ROS2 Camera graph. This class inherits the base class Graph.
     """
-    def __init__(self, camera_xform_path: str, config: dict = {}):
+    def __init__(self, camera_prim_path: str, config: dict = {}):
         """Initialize the ROS2 Camera class
 
         Args:
-            camera_xform_path (str): Path to the camera xform prim. Global path when it starts with `/`, else local to vehicle prim path
+            camera_prim_path (str): Path to the camera prim. Global path when it starts with `/`, else local to vehicle prim path
             config (dict): A Dictionary that contains all the parameters for configuring the ROS2Camera - it can be empty or only have some of the parameters used by the ROS2Camera.
 
         Examples:
@@ -37,9 +37,9 @@ class ROS2Camera(Graph):
         # Initialize the Super class "object" attribute
         super().__init__(graph_type="ROS2Camera")
 
-        # Save the id of the sensor
-        self._camera_xform_path = camera_xform_path
-        self._frame_id = camera_xform_path.rpartition("/")[-1] # frame_id of the camera is the last prim path part after `/`
+        # Save camera path, frame id and ros topic name
+        self._camera_prim_path = camera_prim_path
+        self._frame_id = camera_prim_path.rpartition("/")[-1] # frame_id of the camera is the last prim path part after `/`
         self._base_topic = ""
 
         # Process the config dictionary
@@ -58,20 +58,17 @@ class ROS2Camera(Graph):
         self._namespace = f"/{vehicle.vehicle_name}"
         self._base_topic = f"/{self._frame_id}"
 
-        # Set the prim_path for the camera.
-        # - camera (XForm) - ENU-FLU representation
-        #   - camera (Camera)
-        if self._camera_xform_path[0] != '/':
-            self._camera_xform_path = f"{vehicle.prim_path}/{self._camera_xform_path}"
-        self._camera_prim_path = f"{self._camera_xform_path}/{self._frame_id}"
+        # Set the prim_path for the camera
+        if self._camera_prim_path[0] != '/':
+            self._camera_prim_path = f"{vehicle.prim_path}/{self._camera_prim_path}"
 
-        # Check if the camera paths are valid
-        if not is_prim_path_valid(self._camera_xform_path) or not is_prim_path_valid(self._camera_prim_path):
-            carb.log_error(f"Cannot create ROS2 Camera graph, the prim path \"{self._camera_prim_path}\" is not valid")
+        # Create camera prism
+        if not is_prim_path_valid(self._camera_prim_path):
+            carb.log_error(f"Cannot create ROS2 Camera graph, the camera prim path \"{self._camera_prim_path}\" is not valid")
             return
 
         # Set the prim paths for camera and tf graphs
-        graph_path = f"{self._camera_xform_path}_pub"
+        graph_path = f"{self._camera_prim_path}_pub"
 
         # Graph configuration
         if self._graph_evaluator == "execution":
@@ -170,7 +167,6 @@ class ROS2Camera(Graph):
         # Also initialize the Super class with updated prim path (only camera graph path)
         super().initialize(graph_path)
 
-    @property
     def camera_topic(self, camera_type: str) -> str:
         """
         (str) Path to the camera topic.
@@ -183,7 +179,6 @@ class ROS2Camera(Graph):
         """
         return f"{self._namespace}{self._base_topic}/{camera_type}" if camera_type in self._types else ""
 
-    @property
     def camera_labels_topic(self, camera_type: str) -> str:
         """
         (str) Path to the camera labels topic.

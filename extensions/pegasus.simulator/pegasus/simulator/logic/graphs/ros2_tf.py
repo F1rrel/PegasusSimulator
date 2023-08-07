@@ -31,6 +31,8 @@ class ROS2Tf(Graph):
             vehicle (Vehicle): The vehicle that this graph is attached to.
         """
 
+        self._namespace = f"/{vehicle.vehicle_name}"
+
         # The vehicle uses body instead of standardized base_link,
         # so we need to create the base_link and connect the body to it
         base_link_xform_path = f"{vehicle.prim_path}/body/base_link"
@@ -61,6 +63,9 @@ class ROS2Tf(Graph):
             keys.CONNECT: [
                 ("on_playback_tick.outputs:tick", "publish_transform_tree.inputs:execIn"),
                 ("isaac_read_simulation_time.outputs:simulationTime", "publish_transform_tree.inputs:timeStamp")
+            ],
+            keys.SET_VALUES: [
+                ("publish_transform_tree.inputs:nodeNamespace", self._namespace)
             ]
         }
 
