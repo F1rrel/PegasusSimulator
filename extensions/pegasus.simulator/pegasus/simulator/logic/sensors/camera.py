@@ -1,8 +1,7 @@
 """
-| File: rgb_camera.py
-| Author: Micah Nye (micahn@andrew.cmu.edu)
+| File: camera.py
 | License: BSD-3-Clause. Copyright (c) 2023, Micah Nye. All rights reserved.
-| Description: Simulates an RGB camera using the Omnigraph framework provided in Isaacsim
+| Description: Creates or connects to a Camera prim for higher level functionality
 """
 __all__ = ["Camera"]
 
@@ -47,11 +46,11 @@ class Camera(Sensor):
         # Reference to the actual camera object. This is set when the camera is initialized
         self.camera = None
 
-        # Set the position of the camera relative to the vehicle
+        # Get the position of the camera relative to the vehicle
         self._position = np.array(config.get("position", [0.0, 0.0, 0.0]))
         self._orientation = np.array(config.get("orientation", [0.0, 0.0, 0.0, 1.0]))  # Quaternion [qx, qy, qz, qw]
 
-        # Set the camera parameters
+        # Get the camera parameters
         self._focal_length = config.get("focal_length", 24.0)
         self._focus_distance = config.get("focus_distance", 400.0)
         self._clipping_range = config.get("clipping_range", [0.05, 1000000.0])
