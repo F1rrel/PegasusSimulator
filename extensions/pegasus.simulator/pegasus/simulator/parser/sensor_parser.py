@@ -5,7 +5,7 @@
 
 # Sensors that can be used with the vehicles
 from pegasus.simulator.parser import Parser
-from pegasus.simulator.logic.sensors import Barometer, GPS, IMU, Magnetometer, Vision, Camera
+from pegasus.simulator.logic.sensors import Barometer, GPS, IMU, Magnetometer, Vision, Camera, Lidar
 
 
 class SensorParser(Parser):
@@ -18,7 +18,8 @@ class SensorParser(Parser):
             "imu": IMU,
             "magnetometer": Magnetometer,
             "vision": Vision,
-            "camera": Camera
+            "camera": Camera,
+            "lidar": Lidar
         }
 
     def parse(self, data_type: str, data_dict):

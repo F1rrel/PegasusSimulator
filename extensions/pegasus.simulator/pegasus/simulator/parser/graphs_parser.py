@@ -5,7 +5,7 @@
 
 # Graphs that can be used with the vehicles
 from pegasus.simulator.parser import Parser
-from pegasus.simulator.logic.graphs import ROS2Camera, ROS2Tf, ROS2Odometry
+from pegasus.simulator.logic.graphs import ROS2Camera, ROS2Tf, ROS2Odometry, ROS2Lidar
 
 
 class GraphParser(Parser):
@@ -15,7 +15,8 @@ class GraphParser(Parser):
         self.graphs = {
             "ROS2 Camera": ROS2Camera,
             "ROS2 Tf": ROS2Tf,
-            "ROS2 Odometry": ROS2Odometry
+            "ROS2 Odometry": ROS2Odometry,
+            "ROS2 Lidar": ROS2Lidar
         }
 
     def parse(self, data_type: str, data_dict):
