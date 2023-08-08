@@ -10,3 +10,4 @@ from .imu import IMU
 from .magnetometer import Magnetometer
 from .vision import Vision
 from .camera import Camera
+from .lidar import Lidar

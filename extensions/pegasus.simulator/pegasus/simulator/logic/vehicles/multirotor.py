@@ -82,7 +82,7 @@ class Multirotor(Vehicle):
         # 2. Initialize all the vehicle sensors
         self._sensors = config.sensors
         for sensor in self._sensors:
-            if sensor.sensor_type == "Camera":
+            if sensor.sensor_type in ["Camera", "Lidar"]:
                 sensor.initialize(self)
             else:
                 sensor.initialize(PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)

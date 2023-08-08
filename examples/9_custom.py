@@ -34,7 +34,7 @@ from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, Mav
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.graphs import ROS2Camera, ROS2Tf, ROS2Odometry
-from pegasus.simulator.logic.sensors import Magnetometer, IMU, Barometer, Vision, Camera
+from pegasus.simulator.logic.sensors import Magnetometer, IMU, Barometer, Vision, Camera, Lidar
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
@@ -84,7 +84,20 @@ class PegasusApp:
             "focal_length": 16.0,
             "overwrite_params": True
         }
-        config_multirotor.sensors = [Magnetometer(), IMU(), Barometer(), Vision(), Camera(camera_prim_path, camera_config)]
+        lidar_prim_path = "body/lidar"
+        lidar_config = {
+            "position": [-0.1, 0.0, 0.0],
+            "yaw_offset": 180.0,
+            "horizontal_fov": 27.0,
+            "vertical_fov": 27.0,
+            "min_range": 0.01,
+            "max_range": 5.0,
+            "draw_lines": True
+        }
+        config_multirotor.sensors = [
+            Magnetometer(), IMU(), Barometer(), Vision(), 
+            Camera(camera_prim_path, camera_config),
+            Lidar(lidar_prim_path, lidar_config)]
 
         # Graphs
         config_multirotor.graphs = [ROS2Camera(camera_prim_path, config={"types": ['rgb', 'camera_info', 'depth']}), ROS2Tf(), ROS2Odometry()]
