@@ -103,7 +103,8 @@ class ROS2Odometry(Graph):
             ]
             graph_config[keys.SET_VALUES] += [
                 ("publish_odom_transform_tree.inputs:parentFrameId", self._odom_frame),
-                ("publish_odom_transform_tree.inputs:childFrameId", self._base_frame)
+                ("publish_odom_transform_tree.inputs:childFrameId", self._base_frame),
+                ("publish_odom_transform_tree.inputs:nodeNamespace", self._namespace)
             ]
         
         # Create map_frame->odom_frame publisher
@@ -118,7 +119,8 @@ class ROS2Odometry(Graph):
             ]
             graph_config[keys.SET_VALUES] += [
                 ("publish_map_transform_tree.inputs:parentFrameId", self._map_frame),
-                ("publish_map_transform_tree.inputs:childFrameId", self._odom_frame)
+                ("publish_map_transform_tree.inputs:childFrameId", self._odom_frame),
+                ("publish_map_transform_tree.inputs:nodeNamespace", self._namespace)
             ]
 
         # Create the camera graph
