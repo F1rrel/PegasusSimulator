@@ -28,7 +28,8 @@ class Camera(Sensor):
             >>> {"position": [0.0, 0.0, 0.0],         # Meters
             >>>  "orientation": [0.0, 0.0, 0.0, 1.0], # Quaternion [qx, qy, qz, qw]
             >>>  "focal_length": 24.0,                # Millimeters
-            >>>  "focus_distance", 400.0,             # Stage units
+            >>>  "focus_distance": 400.0,             # Stage units
+            >>>  "clipping_range": [0.05, 1000000.0], # Stage units
             >>>  "resolution": [640, 480],            # Pixels
             >>>  "set_projection_type": "pinhole",    # pinhole, fisheyeOrthographic, fisheyeEquidistant, fisheyeEquisolid, fisheyePolynomial, fisheyeSpherical
             >>>  "update_rate": 30.0,                 # Hz
