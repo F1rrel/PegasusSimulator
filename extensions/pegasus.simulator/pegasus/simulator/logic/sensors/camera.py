@@ -89,6 +89,7 @@ class Camera(Sensor):
                 translation=np.array(self._position),
                 orientation=[self._orientation[3], self._orientation[0], self._orientation[1], self._orientation[2]]
             )
+            self.camera.initialize()
 
             # Set camera parameters
             self.camera.set_focal_length(self._focal_length)

@@ -24,8 +24,7 @@ from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
 # Enable/disable ROS bridge extensions to keep only ROS2 Humble Bridge
 disable_extension("omni.isaac.ros_bridge")
-disable_extension("omni.isaac.ros2_bridge")
-enable_extension("omni.isaac.ros2_bridge-humble")
+enable_extension("omni.isaac.ros2_bridge")
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS

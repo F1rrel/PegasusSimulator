@@ -88,7 +88,7 @@ class PX4LaunchTool:
 # ---- Code used for debugging the px4 tool ----
 def main():
 
-    px4_tool = PX4LaunchTool(os.environ["HOME"] + "/PX4-Autopilot")
+    px4_tool = PX4LaunchTool(os.environ["HOME"] + "/Projects/PX4-Autopilot")
     px4_tool.launch_px4()
 
     import time
