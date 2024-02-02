@@ -6,7 +6,7 @@
 __all__ = ["Lidar"]
 
 from omni.usd import get_context
-from omni.isaac.range_sensor import _range_sensor
+from omni.isaac.range_sensor._range_sensor import acquire_lidar_sensor_interface
 import omni.isaac.RangeSensorSchema as RangeSensorSchema
 from pxr import Sdf, Gf
 
@@ -51,7 +51,7 @@ class Lidar(Sensor):
         # The extension acquires the LIDAR interface at startup.  It will be released during extension shutdown.  We
         # create a LIDAR prim using our schema, and then we interact with / query that prim using the python API found
         # in lidar/bindings
-        self._li = _range_sensor.acquire_lidar_sensor_interface()
+        self._li = acquire_lidar_sensor_interface()
         self.lidar = None
 
         # Get the lidar position relative to its parent prim

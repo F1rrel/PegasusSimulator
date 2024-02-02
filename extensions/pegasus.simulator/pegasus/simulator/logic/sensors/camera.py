@@ -5,8 +5,6 @@
 """
 __all__ = ["Camera"]
 
-import carb
-
 from omni.isaac.core.utils.prims import is_prim_path_valid
 from omni.isaac.sensor import Camera as CameraPrim
 
