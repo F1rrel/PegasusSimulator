@@ -6,14 +6,11 @@ __all__ = ["ROS2Lidar"]
 
 import carb
 
-from omni.isaac.core.utils import stage
 import omni.graph.core as og
 from omni.isaac.core.utils.prims import is_prim_path_valid
-from omni.isaac.core.utils.prims import set_targets
 
 from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
-import numpy as np
 
 class ROS2Lidar(Graph):
     """The class that implements the ROS2 Lidar graph. This class inherits the base class Graph.
@@ -30,6 +27,9 @@ class ROS2Lidar(Graph):
 
             >>> {"publish_scan": False,                     # publish scanner data as sensor_msgs/LaserScan (requires high_lod turned off)
             >>>  "publish_point_cloud": True}               # publish scanner data as sensor_msgs/PointCloud2 (for 2D data, requires high_lod turned on)
+
+        Note:
+            To publish scan data, HighLOD needs to be turned off on the lidar prim. This means that only 2D laser scans are supported.
         """
 
         # Initialize the Super class "object" attribute
@@ -85,6 +85,7 @@ class ROS2Lidar(Graph):
 
         # Add laser scan publishing to the graph
         if self._publish_scan:
+
             graph_config[keys.CREATE_NODES] += [
                 ("isaac_read_lidar_beams", "omni.isaac.range_sensor.IsaacReadLidarBeams"),
                 ("publish_laser_scan", "omni.isaac.ros2_bridge.ROS2PublishLaserScan")
@@ -104,6 +105,7 @@ class ROS2Lidar(Graph):
                 ("isaac_read_simulation_time.outputs:simulationTime", "publish_laser_scan.inputs:timeStamp")
             ]
             graph_config[keys.SET_VALUES] += [
+                ("isaac_read_lidar_beams.inputs:lidarPrim", self._lidar_prim_path),
                 ("publish_laser_scan.inputs:frameId", self._frame_id),
                 ("publish_laser_scan.inputs:nodeNamespace", self._namespace),
                 ("publish_laser_scan.inputs:topicName", f"{self._base_topic}/scan")
@@ -118,34 +120,21 @@ class ROS2Lidar(Graph):
             graph_config[keys.CONNECT] += [
                 ("on_tick.outputs:tick", "isaac_read_lidar_point_cloud.inputs:execIn"),
                 ("isaac_read_lidar_point_cloud.outputs:execOut", "publish_point_cloud.inputs:execIn"),
-                ("isaac_read_lidar_point_cloud.outputs:pointCloudData", "publish_point_cloud.inputs:pointCloudData"),
+                ("isaac_read_lidar_point_cloud.outputs:data", "publish_point_cloud.inputs:data"),
                 ("isaac_read_simulation_time.outputs:simulationTime", "publish_point_cloud.inputs:timeStamp")
             ]
             graph_config[keys.SET_VALUES] += [
+                ("isaac_read_lidar_point_cloud.inputs:lidarPrim", self._lidar_prim_path),
                 ("publish_point_cloud.inputs:frameId", self._frame_id),
                 ("publish_point_cloud.inputs:nodeNamespace", self._namespace),
                 ("publish_point_cloud.inputs:topicName", f"{self._base_topic}/point_cloud")
             ]
         
-        # Create the camera graph
+        # Create the lidar graph
         (graph, _, _, _) = og.Controller.edit(
             graph_specs,
             graph_config
         )
-
-        # Connect lidar to the graphs
-        if self._publish_scan:
-            set_targets(
-                prim=stage.get_current_stage().GetPrimAtPath(f"{graph_path}/isaac_read_lidar_beams"),
-                attribute="inputs:lidarPrim",
-                target_prim_paths=[self._lidar_prim_path]
-            )
-        if self._publish_point_cloud:
-            set_targets(
-                prim=stage.get_current_stage().GetPrimAtPath(f"{graph_path}/isaac_read_lidar_point_cloud"),
-                attribute="inputs:lidarPrim",
-                target_prim_paths=[self._lidar_prim_path]
-            )
         
         # Run the ROS Lidar graph once to generate ROS publishers in SDGPipeline
         og.Controller.evaluate_sync(graph)
