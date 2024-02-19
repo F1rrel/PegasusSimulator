@@ -87,8 +87,13 @@ class ROS2Tf(Graph):
         target_prim_paths = [vehicle.prim_path]
 
         for sensor in vehicle._sensors:
-            if len(sensor.frame_path) and is_prim_path_valid(sensor.frame_path):
-                target_prim_paths.append(sensor.frame_path)
+            if isinstance(sensor.frame_path, list):
+                for frame_path in sensor.frame_path:
+                    if len(frame_path) and is_prim_path_valid(frame_path):
+                        target_prim_paths.append(frame_path)
+            else:
+                if len(sensor.frame_path) and is_prim_path_valid(sensor.frame_path):
+                    target_prim_paths.append(sensor.frame_path)
 
         set_targets(
             prim=stage.get_current_stage().GetPrimAtPath(f"{graph_path}/publish_transform_tree"),
