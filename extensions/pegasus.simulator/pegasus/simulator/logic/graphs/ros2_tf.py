@@ -69,7 +69,7 @@ class ROS2Tf(Graph):
             ]
         }
 
-        # Create the camera graph
+        # Create the tf graph
         (graph, _, _, _) = og.Controller.edit(
             graph_specs,
             graph_config
@@ -101,8 +101,8 @@ class ROS2Tf(Graph):
             target_prim_paths=target_prim_paths
         )
 
-        # Run the ROS Camera graph once to generate ROS image publishers in SDGPipeline
+        # Run the ROS Tf graph once to generate ROS tf publishers in SDGPipeline
         og.Controller.evaluate_sync(graph)
 
-        # Also initialize the Super class with updated prim path (only camera graph path)
+        # Also initialize the Super class with updated prim path
         super().initialize(graph_path)
