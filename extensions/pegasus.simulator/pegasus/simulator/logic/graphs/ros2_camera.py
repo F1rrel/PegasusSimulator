@@ -31,7 +31,8 @@ class ROS2Camera(Graph):
             >>> {"graph_evaluator": "execution",            # type of the omnigraph to create (execution, push)
             >>>  "resolution": [640, 480],                  # output video stream resolution in pixels [width, height]
             >>>  "types": ['rgb', 'camera_info'],           # rgb, depth, depth_pcl, instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose, bbox_3d, camera_info
-            >>>  "publish_labels": True}                    # publish labels for instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose and bbox_3d camera types
+            >>>  "publish_labels": True,                    # publish labels for instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose and bbox_3d camera types
+            >>>  "stereo_offset": (0.0, 0.0),               # stereo offset [tx, ty] used when publishing camera info topic
         """
 
         # Initialize the Super class "object" attribute
@@ -47,6 +48,7 @@ class ROS2Camera(Graph):
         self._resolution = config.get("resolution", [640, 480])
         self._types = np.array(config.get("types", ['rgb', 'camera_info']))
         self._publish_labels = config.get("publish_labels", True)
+        self._stereo_offset = config.get("stereo_offset", (0.0, 0.0))
 
     def initialize(self, vehicle: Vehicle):
         """Method that initializes the graph of the camera.
@@ -140,6 +142,12 @@ class ROS2Camera(Graph):
                 graph_config[keys.SET_VALUES] += [
                     (camera_helper_name + ".inputs:enableSemanticLabels", True),
                     (camera_helper_name + ".inputs:semanticLabelsTopicName", f"{self._frame_id}/{camera_type}_labels")
+                ]
+            
+            # Set camera info stereo offset
+            if camera_type == "camera_info":
+                graph_config[keys.SET_VALUES] += [
+                    (camera_helper_name + ".inputs:stereoOffset", self._stereo_offset),
                 ]
 
             valid_camera_type = True
