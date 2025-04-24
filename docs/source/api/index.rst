@@ -13,6 +13,7 @@ Sensors
    sensors.imu
    sensors.magnetometer
    sensors.lidar
+   sensors.vision
 
 Graphical Sensors
 -----------------
@@ -33,6 +34,7 @@ Graphs
    graphs.graph
    graphs.ros2_camera_graph
    graphs.ros2_lidar
+   graphs.ros2_odometry
 
 Dynamics
 --------
@@ -70,7 +72,7 @@ Vehicle
    state
    vehicles.vehicle
    vehicles.vehicle_manager
-   vehicles.multirotor 
+   vehicles.multirotor
 
 People
 ------
