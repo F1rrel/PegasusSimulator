@@ -12,6 +12,7 @@ Sensors
    sensors.gps
    sensors.imu
    sensors.magnetometer
+   sensors.camera
    sensors.lidar
    sensors.vision
 
