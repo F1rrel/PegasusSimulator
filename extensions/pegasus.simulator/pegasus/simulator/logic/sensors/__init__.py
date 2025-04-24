@@ -9,3 +9,5 @@ from .gps import GPS
 from .imu import IMU
 from .magnetometer import Magnetometer
 from .camera import Camera
+from .lidar import Lidar
+from .vision import Vision
