@@ -4,3 +4,4 @@
 """
 
 from .rep_rtsp_writer import RepRTSPWriter
+from .rep_shm_writer import RepShmWriter

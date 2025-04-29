@@ -4,3 +4,4 @@
 """
 
 from .ps_rtsp_writer import PsRTSPWriter
+from .ps_shm_writer import PsShmWriter

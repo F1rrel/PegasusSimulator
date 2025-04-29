@@ -85,6 +85,15 @@ class PegasusInterface:
         return self._world
 
     @property
+    def world_settings(self):
+        """The current world settings
+
+        Returns:
+            dict: The current world settings
+        """
+        return self._world_settings
+
+    @property
     def vehicle_manager(self):
         """The instance of the VehicleManager.
 
