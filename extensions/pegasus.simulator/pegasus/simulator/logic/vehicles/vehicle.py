@@ -54,6 +54,7 @@ class Vehicle(Robot):
         sensors=[],
         graphical_sensors=[],
         graphs=[],
+        replicator_writers=[],
         backends=[]
     ):
         """
@@ -151,6 +152,14 @@ class Vehicle(Robot):
 
         for graph in self._graphs:
             graph.initialize(self)
+
+        # --------------------------------------------------------------------
+        # -------------- Add the replicator writers to the vehicle -----------
+        # --------------------------------------------------------------------
+        self._replicator_writers = replicator_writers
+
+        for writer in self._replicator_writers:
+            writer.initialize(self)
         
         # --------------------------------------------------------------------
         # ---- Add (communication/control) backends to the vehicle -----------
